@@ -5,12 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Number Buttons</title>
     <script>
-        // Function to handle button clicks
         async function generateNumbers() {
             const response = await fetch('/generate-numbers');
             const numbers = await response.json();
-            
-            // Update button text with random numbers
             for (let i = 0; i < 5; i++) {
                 document.getElementById(`button${i}`).textContent = numbers[i];
             }
@@ -19,8 +16,6 @@
 </head>
 <body>
     <h1>Click the buttons to get random numbers</h1>
-    
-    <!-- Create 5 buttons -->
     <div>
         <button id="button0" onclick="generateNumbers()">Click Me</button>
         <button id="button1" onclick="generateNumbers()">Click Me</button>
