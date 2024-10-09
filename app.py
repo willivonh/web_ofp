@@ -7,7 +7,7 @@ app = Flask(__name__, static_folder='static')
 # Serve the frontend (index.html) from the static folder
 @app.route('/')
 def serve_frontend():
-    return app.send_static_file('index.html')
+    return send_from_directory('static', 'index.html')
 
 # API endpoint to generate random numbers
 @app.route('/generate-numbers', methods=['GET'])
