@@ -2,12 +2,12 @@ from flask import Flask, jsonify, send_from_directory
 import random
 import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
-# Serve the frontend (index.html)
+# Serve the frontend (index.html) from the static folder
 @app.route('/')
 def serve_frontend():
-    return send_from_directory('static', 'index.html')
+    return app.send_static_file('index.html')
 
 # API endpoint to generate random numbers
 @app.route('/generate-numbers', methods=['GET'])
