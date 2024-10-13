@@ -2,26 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Number Buttons</title>
+    <title>Button Game</title>
+    <style>
+        .clicked {
+            background-color: grey;
+            pointer-events: none; /* Disable further clicks */
+        }
+    </style>
     <script>
-        async function generateNumbers() {
-            const response = await fetch('/generate-numbers');
-            const numbers = await response.json();
-            for (let i = 0; i < 5; i++) {
-                document.getElementById(`button${i}`).textContent = numbers[i];
+        let clickedButtons = 0;
+        const totalButtons = 5;
+
+        function buttonClicked(button) {
+            if (!button.classList.contains('clicked')) {
+                button.classList.add('clicked');
+                clickedButtons += 1;
             }
+
+            // Once all buttons are clicked, trigger new round
+            if (clickedButtons === totalButtons) {
+                setTimeout(() => {
+                    generateNewNumbers();
+                }, 500); // Optional delay to show button click states
+            }
+        }
+
+        function generateNewNumbers() {
+            fetch('/generate-new-numbers')
+                .then(response => response.json())
+                .then(data => {
+                    // Reset clicked buttons and numbers
+                    document.querySelectorAll('.button').forEach(button => {
+                        button.classList.remove('clicked');
+                    });
+                    clickedButtons = 0;
+
+                    // Update the buttons with new numbers
+                    data.numbers.forEach((num, index) => {
+                        document.getElementById(`button-${index + 1}`).innerText = num;
+                    });
+                });
         }
     </script>
 </head>
 <body>
-    <h1>Click the buttons to get random numbers</h1>
     <div>
-        <button id="button0" onclick="generateNumbers()">Click Me</button>
-        <button id="button1" onclick="generateNumbers()">Click Me</button>
-        <button id="button2" onclick="generateNumbers()">Click Me</button>
-        <button id="button3" onclick="generateNumbers()">Click Me</button>
-        <button id="button4" onclick="generateNumbers()">Click Me</button>
+        <!-- Example buttons. These IDs are used to update text later -->
+        <button id="button-1" class="button" onclick="buttonClicked(this)">1</button>
+        <button id="button-2" class="button" onclick="buttonClicked(this)">2</button>
+        <button id="button-3" class="button" onclick="buttonClicked(this)">3</button>
+        <button id="button-4" class="button" onclick="buttonClicked(this)">4</button>
+        <button id="button-5" class="button" onclick="buttonClicked(this)">5</button>
     </div>
 </body>
 </html>

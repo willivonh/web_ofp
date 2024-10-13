@@ -8,11 +8,11 @@ app = Flask(__name__)
 def serve_frontend():
     return send_from_directory('docs', 'index.html')
 
-# API endpoint to generate random numbers
-@app.route('/generate-numbers', methods=['GET'])
-def generate_numbers():
-    random_numbers = [random.randint(1, 12) for _ in range(5)]
-    return jsonify(random_numbers)
+@app.route('/generate-new-numbers')
+def generate_new_numbers():
+    # Generate a list of 5 new random numbers
+    numbers = [random.randint(1, 12) for _ in range(5)]
+    return jsonify({'numbers': numbers})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5001)
