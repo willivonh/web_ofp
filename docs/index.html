@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Button Game</title>
+    <title>Poker Deck</title>
     <style>
         .clicked {
             background-color: grey;
@@ -19,40 +19,54 @@
                 clickedButtons += 1;
             }
 
-            // Once all buttons are clicked, trigger new round
+            // When all 5 buttons are clicked, generate new cards
             if (clickedButtons === totalButtons) {
                 setTimeout(() => {
-                    generateNewNumbers();
-                }, 500); // Optional delay to show button click states
+                    generateNewCards();
+                }, 500); // Optional delay
             }
         }
 
-        function generateNewNumbers() {
-            fetch('/generate-new-numbers')
+        function generateNewCards() {
+            fetch('/get-cards')
                 .then(response => response.json())
                 .then(data => {
-                    // Reset clicked buttons and numbers
-                    document.querySelectorAll('.button').forEach(button => {
-                        button.classList.remove('clicked');
+                    // Reset button states and update with new cards
+                    const buttons = document.querySelectorAll('.button');
+
+                    buttons.forEach((button, index) => {
+                        if (data.cards && data.cards[index]) {
+                            button.innerText = data.cards[index];
+                            button.classList.remove('clicked');  // Reset state
+                        }
                     });
+
                     clickedButtons = 0;
 
-                    // Update the buttons with new numbers
-                    data.numbers.forEach((num, index) => {
-                        document.getElementById(`button-${index + 1}`).innerText = num;
-                    });
+                    // If no more cards are left, show a message
+                    if (data.message) {
+                        document.getElementById('card-display').innerText = data.message;
+                        buttons.forEach(button => button.classList.add('clicked'));
+                    }
+
+                    document.getElementById('cards-left').innerText = 'Cards left: ' + data.cards_left;
                 });
         }
+
+        // Call to generate the first set of cards when the page loads
+        window.onload = generateNewCards;
     </script>
 </head>
 <body>
+    <h1>Poker Deck</h1>
     <div>
-        <!-- Example buttons. These IDs are used to update text later -->
-        <button id="button-1" class="button" onclick="buttonClicked(this)">1</button>
-        <button id="button-2" class="button" onclick="buttonClicked(this)">2</button>
-        <button id="button-3" class="button" onclick="buttonClicked(this)">3</button>
-        <button id="button-4" class="button" onclick="buttonClicked(this)">4</button>
-        <button id="button-5" class="button" onclick="buttonClicked(this)">5</button>
+        <button id="button-1" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-2" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-3" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-4" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-5" class="button" onclick="buttonClicked(this)">Loading...</button>
     </div>
+    <div id="card-display"></div>
+    <div id="cards-left"></div>
 </body>
 </html>
