@@ -33,10 +33,12 @@
         let boardIndex = 0;
         const totalBoardSlots = 15;
 
+        let selectedRow = 'top'; // Default row is 'top'
+
         function buttonClicked(button) {
             if (!button.classList.contains('clicked') && boardIndex < totalBoardSlots) {
                 button.classList.add('clicked');
-                addToBoard(button.innerText); // Add the card to the board
+                addToBoard(button.innerText); // Add the card to the correct row
                 clickedButtons += 1;
             }
 
@@ -57,10 +59,26 @@
         }
 
         function addToBoard(card) {
-            const boardCells = document.querySelectorAll('.board-cell');
-            if (boardIndex < totalBoardSlots) {
-                boardCells[boardIndex].innerText = card;  // Place the card in the next available spot
-                boardIndex += 1;
+            let boardCells;
+            // Select the row based on the current selection
+            switch (selectedRow) {
+                case 'top':
+                    boardCells = document.querySelectorAll('.board-cell:nth-child(-n+5)'); // Top row (first 5 cells)
+                    break;
+                case 'middle':
+                    boardCells = document.querySelectorAll('.board-cell:nth-child(n+6):nth-child(-n+10)'); // Middle row (next 5 cells)
+                    break;
+                case 'bottom':
+                    boardCells = document.querySelectorAll('.board-cell:nth-child(n+11):nth-child(-n+15)'); // Bottom row (last 5 cells)
+                    break;
+            }
+
+            // Find the next available spot in the selected row
+            for (let cell of boardCells) {
+                if (!cell.innerText) {
+                    cell.innerText = card;
+                    break;
+                }
             }
         }
 
@@ -104,18 +122,22 @@
                     generateNewCards();
                 });
         }
+
+        // Handle row button clicks and ensure only one button is clicked at a time
         function handleRowButtonClick(event) {
             const rowButtons = document.querySelectorAll('.row-button');
             rowButtons.forEach(button => button.classList.remove('row-clicked')); // Deselect all
             event.target.classList.add('row-clicked'); // Select the clicked button
 
-            // Display which row is clicked
-            const rowName = event.target.innerText;
-            alert(`Currently clicked row: ${rowName}`);
+            // Set the currently selected row based on button click
+            selectedRow = event.target.getAttribute('data-row');
         }
 
-        // Call to generate the first set of cards when the page loads
-        window.onload = generateNewCards;
+        // Call to generate the first set of cards and select default row when the page loads
+        window.onload = () => {
+            generateNewCards();
+            document.querySelector('[data-row="top"]').classList.add('row-clicked'); // Default to top row
+        }
     </script>
 </head>
 <body>
@@ -151,9 +173,9 @@
 
     <!-- Row buttons -->
     <div id="row-buttons" style="margin-top: 20px;">
-        <button class="row-button" onclick="handleRowButtonClick(event)">Top Row</button>
-        <button class="row-button" onclick="handleRowButtonClick(event)">Middle Row</button>
-        <button class="row-button" onclick="handleRowButtonClick(event)">Bottom Row</button>
+        <button class="row-button" data-row="top" onclick="handleRowButtonClick(event)">Top Row</button>
+        <button class="row-button" data-row="middle" onclick="handleRowButtonClick(event)">Middle Row</button>
+        <button class="row-button" data-row="bottom" onclick="handleRowButtonClick(event)">Bottom Row</button>
     </div>
 </body>
 </html>
