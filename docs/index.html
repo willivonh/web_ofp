@@ -22,6 +22,10 @@
             justify-content: center;
             align-items: center;
         }
+        .row-clicked {
+            background-color: #4CAF50;
+            color: white;
+        }
     </style>
     <script>
         let clickedButtons = 0;
@@ -100,6 +104,15 @@
                     generateNewCards();
                 });
         }
+        function handleRowButtonClick(event) {
+            const rowButtons = document.querySelectorAll('.row-button');
+            rowButtons.forEach(button => button.classList.remove('row-clicked')); // Deselect all
+            event.target.classList.add('row-clicked'); // Select the clicked button
+
+            // Display which row is clicked
+            const rowName = event.target.innerText;
+            alert(`Currently clicked row: ${rowName}`);
+        }
 
         // Call to generate the first set of cards when the page loads
         window.onload = generateNewCards;
@@ -134,6 +147,13 @@
         <div class="board-cell"></div>
         <div class="board-cell"></div>
         <div class="board-cell"></div>
+    </div>
+
+    <!-- Row buttons -->
+    <div id="row-buttons" style="margin-top: 20px;">
+        <button class="row-button" onclick="handleRowButtonClick(event)">Top Row</button>
+        <button class="row-button" onclick="handleRowButtonClick(event)">Middle Row</button>
+        <button class="row-button" onclick="handleRowButtonClick(event)">Bottom Row</button>
     </div>
 </body>
 </html>
