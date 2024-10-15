@@ -22,6 +22,9 @@
             justify-content: center;
             align-items: center;
         }
+        .dummy-cell {
+            visibility: hidden; /* Dummy cells will be hidden */
+        }
         .row-clicked {
             background-color: #4CAF50;
             color: white;
@@ -31,7 +34,7 @@
         let clickedButtons = 0;
         const totalButtons = 5;
         let boardIndex = 0;
-        const totalBoardSlots = 15;
+        const totalBoardSlots = 13;
 
         let selectedRow = 'top'; // Default row is 'top'
 
@@ -160,8 +163,8 @@
         <div class="board-cell"></div>
         <div class="board-cell"></div>
         <div class="board-cell"></div>
-        <div class="board-cell"></div>
-        <div class="board-cell"></div>
+        <div class="board-cell dummy-cell"></div> <!-- Dummy cell -->
+        <div class="board-cell dummy-cell"></div> <!-- Dummy cell -->
         <div class="board-cell"></div>
         <div class="board-cell"></div>
         <div class="board-cell"></div>
