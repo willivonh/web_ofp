@@ -73,6 +73,8 @@
                     break;
             }
 
+            boardIndex += 1;
+
             // Find the next available spot in the selected row
             for (let cell of boardCells) {
                 if (!cell.innerText) {
@@ -109,6 +111,7 @@
 
         function resetGame() {
             // Reset the deck and the board
+            fetch('/initialize_deck')
             fetch('/get-cards')
                 .then(() => {
                     // Clear the board

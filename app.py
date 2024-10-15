@@ -11,6 +11,7 @@ def serve_frontend():
 # Initialize the deck of cards
 deck = []
 
+@app.route('/initialize_deck')
 def initialize_deck():
     global deck
     suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
