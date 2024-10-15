@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Poker Deck - {{ username }}</title>
+    <style>
+        /* Same CSS as before */
+        .clicked {
+            background-color: grey;
+            pointer-events: none;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+        .board-cell {
+            width: 100px;
+            height: 150px;
+            border: 1px solid black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .row-clicked {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+    <script>
+        function buttonClicked(button) {
+            // Logic for placing cards on the board
+        }
+
+        function generateNewCards() {
+            fetch('/get-cards')
+                .then(response => response.json())
+                .then(data => {
+                    const buttons = document.querySelectorAll('.button');
+                    buttons.forEach((button, index) => {
+                        if (data.cards && data.cards[index]) {
+                            button.innerText = data.cards[index];
+                            button.classList.remove('clicked');
+                        }
+                    });
+
+                    document.getElementById('cards-left').innerText = 'Cards left: ' + data.cards_left;
+                });
+        }
+
+        window.onload = generateNewCards;
+    </script>
+</head>
+<body>
+    <h1>Poker Deck - {{ username }}</h1>
+    <div>
+        <button id="button-1" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-2" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-3" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-4" class="button" onclick="buttonClicked(this)">Loading...</button>
+        <button id="button-5" class="button" onclick="buttonClicked(this)">Loading...</button>
+    </div>
+    <div id="cards-left"></div>
+
+    <!-- Board to place the cards -->
+    <div class="board">
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+        <div class="board-cell"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game</title>
+</head>
+<body>
+    <h1>Welcome, {{ player }}!</h1>
+
+    <!-- Render Player 1's button -->
+    <form method="POST">
+        <button type="submit" name="player1"
+            {% if player != 'player1' or not player1_clickable %}disabled{% endif %}>
+            Player 1 Button
+        </button>
+    </form>
+
+    <!-- Render Player 2's button -->
+    <form method="POST">
+        <button type="submit" name="player2"
+            {% if player != 'player2' or not player2_clickable %}disabled{% endif %}>
+            Player 2 Button
+        </button>
+    </form>
+
+    <!-- Optional reset button to restart the game -->
+    <form action="/reset" method="GET">
+        <button type="submit">Reset Game</button>
+    </form>
+</body>
+</html>
