@@ -6,7 +6,7 @@
         let ws;
         let user;
         let currentIndex = 0; // To track which slot the card goes into
-        let testButtonCounts = { user1: 0, user2: 0 }; // Track clicks for each user
+        let testButtonCounts = { user1: 1, user2: 1 }; // Track current state for each user (1, 2, or 3)
 
         function setupWebSocket() {
             ws = new WebSocket('ws://localhost:3000');
@@ -101,9 +101,9 @@
                 const testButton = document.createElement('button');
                 testButton.textContent = "test 1"; // Start with "test 1"
                 testButton.onclick = function() {
-                    // Increment the button click count and update the text
-                    testButtonCounts.user1++;
-                    testButton.textContent = `test ${testButtonCounts.user1 + 1}`; // Update button text
+                    // Cycle through the button states
+                    testButtonCounts.user1 = (testButtonCounts.user1 % 3) + 1; // Cycle between 1, 2, 3
+                    testButton.textContent = `test ${testButtonCounts.user1}`; // Update button text
                 };
                 user1ButtonContainer.appendChild(testButton);
             }
@@ -112,9 +112,9 @@
                 const testButton = document.createElement('button');
                 testButton.textContent = "test 1"; // Start with "test 1"
                 testButton.onclick = function() {
-                    // Increment the button click count and update the text
-                    testButtonCounts.user2++;
-                    testButton.textContent = `test ${testButtonCounts.user2 + 1}`; // Update button text
+                    // Cycle through the button states
+                    testButtonCounts.user2 = (testButtonCounts.user2 % 3) + 1; // Cycle between 1, 2, 3
+                    testButton.textContent = `test ${testButtonCounts.user2}`; // Update button text
                 };
                 user2ButtonContainer.appendChild(testButton);
             }
@@ -180,3 +180,4 @@
     <div id="user2-test-button" class="test-button-container"></div>
 </body>
 </html>
+
