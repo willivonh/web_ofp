@@ -6,33 +6,83 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-let userState = {
-    user1Clicked: false,
-    user2Clicked: false
+let gameState = {
+    user1Cards: [],
+    user2Cards: [],
+    user1Board: Array(13).fill(null),
+    user2Board: Array(13).fill(null),
+    user1Clicked: 0,  // Counts how many cards have been clicked
+    user2Clicked: 0,
+    gameEnded: false
 };
+
+// Function to create a shuffled deck of cards
+function createShuffledDeck() {
+    const suits = ['♠', '♥', '♦', '♣'];
+    const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    let deck = [];
+    for (let suit of suits) {
+        for (let rank of ranks) {
+            deck.push(`${rank}${suit}`);
+        }
+    }
+    return deck.sort(() => Math.random() - 0.5);
+}
+
+// Function to deal 5 cards to each user
+function dealCards() {
+    const deck = createShuffledDeck();
+    gameState.user1Cards = deck.slice(0, 5);
+    gameState.user2Cards = deck.slice(5, 10);
+    gameState.user1Clicked = 0;
+    gameState.user2Clicked = 0;
+    gameState.user1Board = Array(13).fill(null);
+    gameState.user2Board = Array(13).fill(null);
+    gameState.gameEnded = false;
+}
 
 // Serve static files
 app.use(express.static('public'));
 
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
-    // Send the initial state to the newly connected client
-    ws.send(JSON.stringify(userState));
+    // Send initial game state to the new client
+    ws.send(JSON.stringify(gameState));
 
     ws.on('message', (message) => {
         const data = JSON.parse(message);
 
-        // Update user state based on which user clicked their button
-        if (data.user === 'user1') {
-            userState.user1Clicked = data.clicked;
-        } else if (data.user === 'user2') {
-            userState.user2Clicked = data.clicked;
+        if (data.action === 'deal') {
+            dealCards();
+        } else if (data.action === 'cardClick') {
+            if (data.user === 'user1') {
+                gameState.user1Board[data.index] = data.card;
+                gameState.user1Clicked++;
+            } else if (data.user === 'user2') {
+                gameState.user2Board[data.index] = data.card;
+                gameState.user2Clicked++;
+            }
+        } else if (data.action === 'reset') {
+            gameState = {
+                user1Cards: [],
+                user2Cards: [],
+                user1Board: Array(13).fill(null),
+                user2Board: Array(13).fill(null),
+                user1Clicked: 0,
+                user2Clicked: 0,
+                gameEnded: false
+            };
         }
 
-        // Broadcast the updated state to all connected clients
+        // Check if both users have placed all 5 cards
+        if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
+            gameState.gameEnded = true;
+        }
+
+        // Broadcast the updated game state to all clients
         wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify(userState));
+                client.send(JSON.stringify(gameState));
             }
         });
     });

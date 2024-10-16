@@ -5,6 +5,7 @@
     <script>
         let ws;
         let user;
+        let currentIndex = 0; // To track which slot the card goes into
 
         function setupWebSocket() {
             ws = new WebSocket('ws://localhost:3000');
@@ -12,39 +13,101 @@
             ws.onmessage = function(event) {
                 const state = JSON.parse(event.data);
 
-                // Update buttons based on the received state
-                document.getElementById('user1Button').textContent = state.user1Clicked ? 'User 1 Clicked' : 'User 1 Not Clicked';
-                document.getElementById('user2Button').textContent = state.user2Clicked ? 'User 2 Clicked' : 'User 2 Not Clicked';
+                // Update the boards for both users
+                displayBoard('user1Board', state.user1Board);
+                displayBoard('user2Board', state.user2Board);
+
+                // Display the available cards for the user
+                if (user === 'user1') {
+                    displayCards('user1', state.user1Cards);
+                } else {
+                    displayCards('user2', state.user2Cards);
+                }
+
+                if (state.gameEnded) {
+                    alert('Game over! Both users have placed all their cards.');
+                }
             };
         }
 
-        function buttonClicked() {
-            const clicked = user === 'user1'
-                ? document.getElementById('user1Button').textContent === 'User 1 Not Clicked'
-                : document.getElementById('user2Button').textContent === 'User 2 Not Clicked';
+        function displayCards(user, cards) {
+            const container = document.getElementById('cardContainer');
+            container.innerHTML = '';
+            cards.forEach((card, index) => {
+                const cardButton = document.createElement('button');
+                cardButton.textContent = card;
+                cardButton.onclick = function() {
+                    ws.send(JSON.stringify({
+                        action: 'cardClick',
+                        user: user,
+                        card: card,
+                        index: currentIndex
+                    }));
+                    cardButton.disabled = true;
+                    currentIndex++;
+                };
+                container.appendChild(cardButton);
+            });
+        }
 
-            ws.send(JSON.stringify({ user, clicked }));
+        function displayBoard(boardId, board) {
+            const boardContainer = document.getElementById(boardId);
+            boardContainer.innerHTML = '';
+            board.forEach((card, index) => {
+                const slot = document.createElement('div');
+                slot.className = 'slot';
+                slot.textContent = card ? card : 'Empty';
+                boardContainer.appendChild(slot);
+            });
+        }
+
+        function dealCards() {
+            ws.send(JSON.stringify({ action: 'deal' }));
+        }
+
+        function resetGame() {
+            currentIndex = 0;
+            ws.send(JSON.stringify({ action: 'reset' }));
         }
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             user = urlParams.get('user');
 
-            if (user === 'user1') {
-                document.getElementById('user1Button').disabled = false;
-                document.getElementById('user2Button').disabled = true;
-            } else {
-                document.getElementById('user1Button').disabled = true;
-                document.getElementById('user2Button').disabled = false;
-            }
-
             setupWebSocket();
         };
     </script>
+    <style>
+        .board {
+            display: flex;
+            flex-wrap: wrap;
+            width: 200px;
+        }
+        .slot {
+            width: 60px;
+            height: 80px;
+            border: 1px solid black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 5px;
+        }
+    </style>
 </head>
 <body>
     <h1>Main Page</h1>
-    <button id="user1Button" onclick="buttonClicked()" disabled>User 1 Not Clicked</button>
-    <button id="user2Button" onclick="buttonClicked()" disabled>User 2 Not Clicked</button>
+
+    <h2>Game Controls</h2>
+    <button onclick="dealCards()">Deal Cards</button>
+    <button onclick="resetGame()">Reset Game</button>
+
+    <h2>Your Cards</h2>
+    <div id="cardContainer"></div>
+
+    <h2>User 1 Board</h2>
+    <div id="user1Board" class="board"></div>
+
+    <h2>User 2 Board</h2>
+    <div id="user2Board" class="board"></div>
 </body>
 </html>
