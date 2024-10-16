@@ -53,12 +53,32 @@
         function displayBoard(boardId, board) {
             const boardContainer = document.getElementById(boardId);
             boardContainer.innerHTML = '';
-            board.forEach((card, index) => {
+
+            // Split board into 3 rows: 3 places, 5 places, and 5 places
+            const topRow = board.slice(0, 3);
+            const middleRow = board.slice(3, 8);
+            const bottomRow = board.slice(8, 13);
+
+            // Create row elements for each
+            const topRowElement = createRow(topRow);
+            const middleRowElement = createRow(middleRow);
+            const bottomRowElement = createRow(bottomRow);
+
+            boardContainer.appendChild(topRowElement);
+            boardContainer.appendChild(middleRowElement);
+            boardContainer.appendChild(bottomRowElement);
+        }
+
+        function createRow(cards) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            cards.forEach((card) => {
                 const slot = document.createElement('div');
                 slot.className = 'slot';
                 slot.textContent = card ? card : 'Empty';
-                boardContainer.appendChild(slot);
+                row.appendChild(slot);
             });
+            return row;
         }
 
         function dealCards() {
@@ -80,9 +100,16 @@
     <style>
         .board {
             display: flex;
-            flex-wrap: wrap;
-            width: 200px;
+            flex-direction: column;
+            align-items: center;
         }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
         .slot {
             width: 60px;
             height: 80px;
@@ -91,6 +118,10 @@
             align-items: center;
             justify-content: center;
             margin: 5px;
+        }
+
+        .slot.empty {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
