@@ -29,6 +29,7 @@
                     alert('Game over! Both users have placed all their cards.');
                 }
             };
+            addTestButton(); // Add the test button when dealing cards
         }
 
         function displayCards(user, cards) {
@@ -84,7 +85,6 @@
 
         function dealCards() {
             ws.send(JSON.stringify({ action: 'deal' }));
-            addTestButton(); // Add the test button when dealing cards
         }
 
         function resetGame() {
