@@ -5,8 +5,8 @@
     <script>
         let ws;
         let user;
-        let currentIndex = 0; // To track which slot the card goes into
         let testButtonCounts = { user1: 1, user2: 1 }; // Track current state for each user (1, 2, or 3)
+        let clickedCards = { user1: [], user2: [] }; // Track clicked cards for both users
 
         function setupWebSocket() {
             ws = new WebSocket('ws://localhost:3000');
@@ -35,18 +35,29 @@
         function displayCards(user, cards) {
             const container = document.getElementById('cardContainer');
             container.innerHTML = '';
-            cards.forEach((card, index) => {
+            cards.forEach((card) => {
                 const cardButton = document.createElement('button');
                 cardButton.textContent = card;
+
+                // Disable the button if the card has already been clicked
+                if (clickedCards[user].includes(card)) {
+                    cardButton.disabled = true; // Disable if card has been clicked already
+                    cardButton.style.backgroundColor = '#ccc'; // Change button color to indicate it's clicked
+                    cardButton.style.cursor = 'not-allowed'; // Change cursor to indicate disabled state
+                }
+
                 cardButton.onclick = function() {
+                    // Send the selected card and the row number to the server
                     ws.send(JSON.stringify({
                         action: 'cardClick',
                         user: user,
                         card: card,
-                        index: currentIndex
+                        row: testButtonCounts[user] // Send the row number
                     }));
+                    clickedCards[user].push(card); // Track the clicked card
                     cardButton.disabled = true; // Disable this card button after use
-                    currentIndex++;
+                    cardButton.style.backgroundColor = '#ccc'; // Change button color to indicate it's clicked
+                    cardButton.style.cursor = 'not-allowed'; // Change cursor to indicate disabled state
                 };
                 container.appendChild(cardButton);
             });
@@ -88,8 +99,8 @@
         }
 
         function resetGame() {
-            currentIndex = 0;
             ws.send(JSON.stringify({ action: 'reset' }));
+            clickedCards = { user1: [], user2: [] }; // Reset the clicked cards tracker
         }
 
         function addTestButton() {
@@ -180,4 +191,3 @@
     <div id="user2-test-button" class="test-button-container"></div>
 </body>
 </html>
-

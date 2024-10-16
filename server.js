@@ -56,11 +56,25 @@ wss.on('connection', (ws) => {
             dealCards();
         } else if (data.action === 'cardClick') {
             if (data.user === 'user1') {
-                gameState.user1Board[data.index] = data.card;
-                gameState.user1Clicked++;
+                // Find the first empty slot in the selected row
+                let rowIndex = (data.row - 1) * 5; // Adjust for your board structure
+                for (let i = 0; i < 5; i++) {
+                    if (!gameState.user1Board[rowIndex + i]) {
+                        gameState.user1Board[rowIndex + i] = data.card; // Place the card
+                        gameState.user1Clicked++;
+                        break; // Exit after placing the card
+                    }
+                }
             } else if (data.user === 'user2') {
-                gameState.user2Board[data.index] = data.card;
-                gameState.user2Clicked++;
+                // Find the first empty slot in the selected row
+                let rowIndex = (data.row - 1) * 5; // Adjust for your board structure
+                for (let i = 0; i < 5; i++) {
+                    if (!gameState.user2Board[rowIndex + i]) {
+                        gameState.user2Board[rowIndex + i] = data.card; // Place the card
+                        gameState.user2Clicked++;
+                        break; // Exit after placing the card
+                    }
+                }
             }
         } else if (data.action === 'reset') {
             gameState = {
