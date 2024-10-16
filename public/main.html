@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Main Page</title>
+    <script>
+        let ws;
+        let user;
+
+        function setupWebSocket() {
+            ws = new WebSocket('ws://localhost:3000');
+
+            ws.onmessage = function(event) {
+                const state = JSON.parse(event.data);
+
+                // Update buttons based on the received state
+                document.getElementById('user1Button').textContent = state.user1Clicked ? 'User 1 Clicked' : 'User 1 Not Clicked';
+                document.getElementById('user2Button').textContent = state.user2Clicked ? 'User 2 Clicked' : 'User 2 Not Clicked';
+            };
+        }
+
+        function buttonClicked() {
+            const clicked = user === 'user1'
+                ? document.getElementById('user1Button').textContent === 'User 1 Not Clicked'
+                : document.getElementById('user2Button').textContent === 'User 2 Not Clicked';
+
+            ws.send(JSON.stringify({ user, clicked }));
+        }
+
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            user = urlParams.get('user');
+
+            if (user === 'user1') {
+                document.getElementById('user1Button').disabled = false;
+                document.getElementById('user2Button').disabled = true;
+            } else {
+                document.getElementById('user1Button').disabled = true;
+                document.getElementById('user2Button').disabled = false;
+            }
+
+            setupWebSocket();
+        };
+    </script>
+</head>
+<body>
+    <h1>Main Page</h1>
+    <button id="user1Button" onclick="buttonClicked()" disabled>User 1 Not Clicked</button>
+    <button id="user2Button" onclick="buttonClicked()" disabled>User 2 Not Clicked</button>
+</body>
+</html>
