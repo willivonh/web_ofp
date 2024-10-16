@@ -6,6 +6,7 @@
         let ws;
         let user;
         let currentIndex = 0; // To track which slot the card goes into
+        let testButtonCounts = { user1: 0, user2: 0 }; // Track clicks for each user
 
         function setupWebSocket() {
             ws = new WebSocket('ws://localhost:3000');
@@ -43,7 +44,7 @@
                         card: card,
                         index: currentIndex
                     }));
-                    cardButton.disabled = true;
+                    cardButton.disabled = true; // Disable this card button after use
                     currentIndex++;
                 };
                 container.appendChild(cardButton);
@@ -83,11 +84,40 @@
 
         function dealCards() {
             ws.send(JSON.stringify({ action: 'deal' }));
+            addTestButton(); // Add the test button when dealing cards
         }
 
         function resetGame() {
             currentIndex = 0;
             ws.send(JSON.stringify({ action: 'reset' }));
+        }
+
+        function addTestButton() {
+            const user1ButtonContainer = document.getElementById('user1-test-button');
+            const user2ButtonContainer = document.getElementById('user2-test-button');
+
+            // Add button only if it doesn't exist
+            if (user === 'user1' && user1ButtonContainer.innerHTML === '') {
+                const testButton = document.createElement('button');
+                testButton.textContent = "test 1"; // Start with "test 1"
+                testButton.onclick = function() {
+                    // Increment the button click count and update the text
+                    testButtonCounts.user1++;
+                    testButton.textContent = `test ${testButtonCounts.user1 + 1}`; // Update button text
+                };
+                user1ButtonContainer.appendChild(testButton);
+            }
+
+            if (user === 'user2' && user2ButtonContainer.innerHTML === '') {
+                const testButton = document.createElement('button');
+                testButton.textContent = "test 1"; // Start with "test 1"
+                testButton.onclick = function() {
+                    // Increment the button click count and update the text
+                    testButtonCounts.user2++;
+                    testButton.textContent = `test ${testButtonCounts.user2 + 1}`; // Update button text
+                };
+                user2ButtonContainer.appendChild(testButton);
+            }
         }
 
         window.onload = function() {
@@ -123,6 +153,12 @@
         .slot.empty {
             background-color: #f0f0f0;
         }
+
+        .test-button-container {
+            margin-top: 10px; /* Spacing above the test button */
+            display: flex; /* Ensure buttons are next to the name */
+            align-items: center;
+        }
     </style>
 </head>
 <body>
@@ -137,8 +173,10 @@
 
     <h2>User 1 Board</h2>
     <div id="user1Board" class="board"></div>
+    <div id="user1-test-button" class="test-button-container"></div>
 
     <h2>User 2 Board</h2>
     <div id="user2Board" class="board"></div>
+    <div id="user2-test-button" class="test-button-container"></div>
 </body>
 </html>
