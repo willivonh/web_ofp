@@ -30,7 +30,9 @@
                 }
 
                 if (state.gameEnded) {
-                    alert('Game Over!');
+                    alert('Game Over! Here is a summary:\n' +
+                          `User 1's Board: ${state.user1Board.join(', ')}\n` +
+                          `User 2's Board: ${state.user2Board.join(', ')}`);
                 }
             };
             addTestButton(); // Add the test button when dealing cards
