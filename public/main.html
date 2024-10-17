@@ -125,22 +125,22 @@
             // Add button only if it doesn't exist
             if (user === 'user1' && user1ButtonContainer.innerHTML === '') {
                 const testButton = document.createElement('button');
-                testButton.textContent = "test 1"; // Start with "test 1"
+                testButton.textContent = "Row 1"; // Start with "test 1"
                 testButton.onclick = function() {
                     // Cycle through the button states
                     testButtonCounts.user1 = (testButtonCounts.user1 % 3) + 1; // Cycle between 1, 2, 3
-                    testButton.textContent = `test ${testButtonCounts.user1}`; // Update button text
+                    testButton.textContent = `Row ${testButtonCounts.user1}`; // Update button text
                 };
                 user1ButtonContainer.appendChild(testButton);
             }
 
             if (user === 'user2' && user2ButtonContainer.innerHTML === '') {
                 const testButton = document.createElement('button');
-                testButton.textContent = "test 1"; // Start with "test 1"
+                testButton.textContent = "Row 1"; // Start with "test 1"
                 testButton.onclick = function() {
                     // Cycle through the button states
                     testButtonCounts.user2 = (testButtonCounts.user2 % 3) + 1; // Cycle between 1, 2, 3
-                    testButton.textContent = `test ${testButtonCounts.user2}`; // Update button text
+                    testButton.textContent = `Row ${testButtonCounts.user2}`; // Update button text
                 };
                 user2ButtonContainer.appendChild(testButton);
             }
