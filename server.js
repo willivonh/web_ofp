@@ -11,7 +11,7 @@ let gameState = {
     user2Cards: [],
     user1Board: Array(13).fill(null),
     user2Board: Array(13).fill(null),
-    user1Clicked: 0,  // Counts how many cards have been clicked
+    user1Clicked: 0,
     user2Clicked: 0,
     gameEnded: false
 };
@@ -55,46 +55,45 @@ wss.on('connection', (ws) => {
         if (data.action === 'deal') {
             dealCards();
         } else if (data.action === 'cardClick') {
-            if (data.user === 'user1') {
-                // Find the first empty slot in the selected row
-                let rowIndex = (data.row - 1) * 5; // Adjust for your board structure
-                for (let i = 0; i < 5; i++) {
-                    if (!gameState.user1Board[rowIndex + i]) {
-                        gameState.user1Board[rowIndex + i] = data.card; // Place the card
-                        gameState.user1Clicked++;
-                        break; // Exit after placing the card
-                    }
-                }
-            } else if (data.user === 'user2') {
-                // Find the first empty slot in the selected row
-                let rowIndex = (data.row - 1) * 5; // Adjust for your board structure
-                for (let i = 0; i < 5; i++) {
-                    if (!gameState.user2Board[rowIndex + i]) {
-                        gameState.user2Board[rowIndex + i] = data.card; // Place the card
-                        gameState.user2Clicked++;
-                        break; // Exit after placing the card
-                    }
+            const { user, card, row } = data;
+
+            // Get the appropriate board and the user's clicked count
+            const board = gameState[`${user}Board`];
+            const clickedCount = gameState[`${user}Clicked`];
+
+            // Determine which row to place the card based on the button state
+            let rowIndex;
+            if (row === 1) {
+                rowIndex = 0;
+            } else if (row === 2) {
+                rowIndex = 3;
+            } else if (row === 3) {
+                rowIndex = 8;
+            }
+
+            // Find the first empty slot in the chosen row
+            let placed = false;
+            const maxIndex = row === 1 ? 2 : row === 2 ? 7 : 12;
+            for (let i = rowIndex; i <= maxIndex; i++) {
+                if (!board[i]) {
+                    board[i] = card;
+                    placed = true;
+                    break;
                 }
             }
-        } else if (data.action === 'reset') {
-            gameState = {
-                user1Cards: [],
-                user2Cards: [],
-                user1Board: Array(13).fill(null),
-                user2Board: Array(13).fill(null),
-                user1Clicked: 0,
-                user2Clicked: 0,
-                gameEnded: false
-            };
+
+            if (placed) {
+                gameState[`${user}Clicked`] += 1;
+            }
+
+            // Check if all cards have been placed
+            if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
+                gameState.gameEnded = true;
+            }
         }
 
-        // Check if both users have placed all 5 cards
-        if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
-            gameState.gameEnded = true;
-        }
-
-        // Broadcast the updated game state to all clients
-        wss.clients.forEach(client => {
+        // Broadcast the updated game state to all connected clients
+        wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify(gameState));
             }
