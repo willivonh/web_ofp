@@ -13,6 +13,7 @@ let gameState = {
     user2Board: Array(13).fill(null),
     user1Clicked: 0,
     user2Clicked: 0,
+    round: 0,
     gameEnded: false
 };
 
@@ -52,10 +53,11 @@ function dealCards() {
         deck = createShuffledDeck(); // Create a new deck if it’s empty
     }
 
-    gameState.user1Cards = deck.splice(0, 5); // Deal 5 cards to user 1
-    gameState.user2Cards = deck.splice(0, 5); // Deal 5 cards to user 2
+    gameState.user1Cards = deck.splice(0, 3); // Deal 5 cards to user 1
+    gameState.user2Cards = deck.splice(0, 3); // Deal 5 cards to user 2
     gameState.user1Clicked = 0;
     gameState.user2Clicked = 0;
+    gameState.round += 1;
     gameState.gameEnded = false;
 }
 
@@ -106,10 +108,14 @@ wss.on('connection', (ws) => {
                 gameState[`${user}Clicked`] += 1;
             }
 
-            // Check if all cards have been placed
-            if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
-                dealCards();
-            }
+            if(gameState.round == 0) {
+                // Check if all cards have been placed
+                if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
+                    dealCards();
+                }
+            } else if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
+                    dealCards();
+                }
         }
 
         // Broadcast the updated game state to all connected clients
