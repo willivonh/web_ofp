@@ -78,6 +78,8 @@ wss.on('connection', (ws) => {
             dealFirst();
         } else if (data.action === 'dealAgain') {
             dealCards();
+        } else if (data.action === 'reset') {
+            dealFirst();
         } else if(data.action === 'cardClick') {
             const { user, card, row } = data;
 
