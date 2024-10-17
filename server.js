@@ -16,24 +16,29 @@ let gameState = {
     gameEnded: false
 };
 
-// Function to create a shuffled deck of cards
+let deck = []; // Declare deck globally to persist through the game
+
+// Function to create and shuffle a deck of cards
 function createShuffledDeck() {
     const suits = ['♠', '♥', '♦', '♣'];
     const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
-    let deck = [];
+    let newDeck = [];
     for (let suit of suits) {
         for (let rank of ranks) {
-            deck.push(`${rank}${suit}`);
+            newDeck.push(`${rank}${suit}`);
         }
     }
-    return deck.sort(() => Math.random() - 0.5);
+    return newDeck.sort(() => Math.random() - 0.5);
 }
 
-// Function to deal 5 cards to each user
+// Function to deal cards from the existing deck
 function dealFirst() {
-    const deck = createShuffledDeck();
-    gameState.user1Cards = deck.slice(0, 5);
-    gameState.user2Cards = deck.slice(5, 10);
+    if (deck.length === 0) {
+        deck = createShuffledDeck(); // Create a new deck if it’s empty
+    }
+
+    gameState.user1Cards = deck.splice(0, 5); // Deal 5 cards to user 1
+    gameState.user2Cards = deck.splice(0, 5); // Deal 5 cards to user 2
     gameState.user1Clicked = 0;
     gameState.user2Clicked = 0;
     gameState.user1Board = Array(13).fill(null);
@@ -41,11 +46,14 @@ function dealFirst() {
     gameState.gameEnded = false;
 }
 
-// Function to deal 5 cards to each user
+// Function to deal new cards from the remaining deck
 function dealCards() {
-    const deck = createShuffledDeck();
-    gameState.user1Cards = deck.slice(0, 5);
-    gameState.user2Cards = deck.slice(5, 10);
+    if (deck.length === 0) {
+        deck = createShuffledDeck(); // Create a new deck if it’s empty
+    }
+
+    gameState.user1Cards = deck.splice(0, 5); // Deal 5 cards to user 1
+    gameState.user2Cards = deck.splice(0, 5); // Deal 5 cards to user 2
     gameState.user1Clicked = 0;
     gameState.user2Clicked = 0;
     gameState.gameEnded = false;
