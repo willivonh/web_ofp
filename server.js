@@ -13,6 +13,8 @@ let gameState = {
     user2Board: Array(13).fill(null),
     user1Clicked: 0,
     user2Clicked: 0,
+    user1ClickedTotal: 0,
+    user2ClickedTotal: 0,
     round: 0,
     gameEnded: false
 };
@@ -106,6 +108,7 @@ wss.on('connection', (ws) => {
 
             if (placed) {
                 gameState[`${user}Clicked`] += 1;
+                gameState[`${user}ClickedTotal`] += 1;
             }
 
             if(gameState.round == 0) {
@@ -114,8 +117,13 @@ wss.on('connection', (ws) => {
                     dealCards();
                 }
             } else if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
+                if (gameState.user1ClickedTotal === 13 && gameState.user2ClickedTotal === 13) {
+                    gameState.gameEnded = true;
+                }
+                else {
                     dealCards();
                 }
+            }
         }
 
         // Broadcast the updated game state to all connected clients
