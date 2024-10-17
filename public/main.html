@@ -25,11 +25,22 @@
                     displayCards('user2', state.user2Cards);
                 }
 
+                if (state.gameStarted) {
+                    disableDealButton();
+                }
+
                 if (state.gameEnded) {
                     alert('Game Over!');
                 }
             };
             addTestButton(); // Add the test button when dealing cards
+        }
+
+        function disableDealButton() {
+            // Disable the Deal Cards button for both users
+            document.getElementById('dealCardsButton').disabled = true; // Disable the button
+            document.getElementById('dealCardsButton').style.backgroundColor = '#ccc'; // Change button color
+            document.getElementById('dealCardsButton').style.cursor = 'not-allowed'; // Change cursor to indicate disabled state
         }
 
         function displayCards(user, cards) {
@@ -180,7 +191,7 @@
     <h1>Main Page</h1>
 
     <h2>Game Controls</h2>
-    <button onclick="dealFirst()">Deal Cards</button>
+    <button id="dealCardsButton" onclick="dealFirst()">Start Game</button>
     <button onclick="resetGame()">Reset Game</button>
 
     <h2>Your Cards</h2>

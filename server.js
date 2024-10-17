@@ -16,6 +16,7 @@ let gameState = {
     user1ClickedTotal: 0,
     user2ClickedTotal: 0,
     round: 0,
+    gameStarted: false,
     gameEnded: false
 };
 
@@ -47,6 +48,7 @@ function dealFirst() {
     gameState.user1Board = Array(13).fill(null);
     gameState.user2Board = Array(13).fill(null);
     gameState.gameEnded = false;
+    gameState.gameStarted = true;
 }
 
 // Function to deal new cards from the remaining deck
