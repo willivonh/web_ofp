@@ -26,7 +26,7 @@
                 }
 
                 if (state.gameEnded) {
-                    alert('Game over! Both users have placed all their cards.');
+                    alert('Game Over!');
                 }
             };
             addTestButton(); // Add the test button when dealing cards
@@ -94,8 +94,12 @@
             return row;
         }
 
-        function dealCards() {
+        function dealFirst() {
             ws.send(JSON.stringify({ action: 'deal' }));
+        }
+
+        function dealCards() {
+            ws.send(JSON.stringify({ action: 'dealAgain' }));
         }
 
         function resetGame() {
@@ -176,7 +180,7 @@
     <h1>Main Page</h1>
 
     <h2>Game Controls</h2>
-    <button onclick="dealCards()">Deal Cards</button>
+    <button onclick="dealFirst()">Deal Cards</button>
     <button onclick="resetGame()">Reset Game</button>
 
     <h2>Your Cards</h2>

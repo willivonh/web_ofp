@@ -30,7 +30,7 @@ function createShuffledDeck() {
 }
 
 // Function to deal 5 cards to each user
-function dealCards() {
+function dealFirst() {
     const deck = createShuffledDeck();
     gameState.user1Cards = deck.slice(0, 5);
     gameState.user2Cards = deck.slice(5, 10);
@@ -38,6 +38,16 @@ function dealCards() {
     gameState.user2Clicked = 0;
     gameState.user1Board = Array(13).fill(null);
     gameState.user2Board = Array(13).fill(null);
+    gameState.gameEnded = false;
+}
+
+// Function to deal 5 cards to each user
+function dealCards() {
+    const deck = createShuffledDeck();
+    gameState.user1Cards = deck.slice(0, 5);
+    gameState.user2Cards = deck.slice(5, 10);
+    gameState.user1Clicked = 0;
+    gameState.user2Clicked = 0;
     gameState.gameEnded = false;
 }
 
@@ -53,8 +63,10 @@ wss.on('connection', (ws) => {
         const data = JSON.parse(message);
 
         if (data.action === 'deal') {
+            dealFirst();
+        } else if (data.action === 'dealAgain') {
             dealCards();
-        } else if (data.action === 'cardClick') {
+        } else if(data.action === 'cardClick') {
             const { user, card, row } = data;
 
             // Get the appropriate board and the user's clicked count
@@ -88,7 +100,7 @@ wss.on('connection', (ws) => {
 
             // Check if all cards have been placed
             if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
-                gameState.gameEnded = true;
+                dealCards();
             }
         }
 
