@@ -29,6 +29,23 @@
                     disableDealButton();
                 }
 
+                if (state.user1Finished) {
+                    disableUserButtons('user1');
+                    if (state.user2Finished) {
+                        reEnableUserButtons('user1');
+                        reEnableUserButtons('user2');
+                    }
+                }
+
+                if (state.user2Finished) {
+                    disableUserButtons('user2');
+                    if (state.user1Finished) {
+                        reEnableUserButtons('user1');
+                        reEnableUserButtons('user2');
+                    }
+                }
+                
+
                 if (state.gameEnded) {
                     const outputElement = document.getElementById('output');
                     outputElement.innerHTML = JSON.stringify(state.user1Board.join(', ')+state.user2Board.join(', '));
@@ -53,6 +70,9 @@
                 const cardButton = document.createElement('button');
                 cardButton.textContent = card;
 
+                // Set a data attribute to identify which user the button belongs to
+                cardButton.setAttribute('data-user', user);
+
                 // Disable the button if the card has already been clicked
                 if (clickedCards[user].includes(card)) {
                     cardButton.disabled = true; // Disable if card has been clicked already
@@ -74,6 +94,35 @@
                     cardButton.style.cursor = 'not-allowed'; // Change cursor to indicate disabled state
                 };
                 container.appendChild(cardButton);
+            });
+        }
+
+        function disableUserButtons(user) {
+            const cardButtons = document.querySelectorAll('#cardContainer button');
+            cardButtons.forEach((button) => {
+                if (button.getAttribute('data-user') === user) {
+                    button.disabled = true;
+                    button.style.backgroundColor = '#ccc'; // Change button color to indicate it's disabled
+                    button.style.cursor = 'not-allowed'; // Change cursor to indicate disabled state
+                }
+            });
+        }
+
+        function reEnableUserButtons(user) {
+            // Select all card buttons in the cardContainer
+            const cardButtons = document.querySelectorAll('#cardContainer button');
+
+            // Loop through each button
+            cardButtons.forEach((button) => {
+                // Check if the button belongs to the specified user
+                if (button.getAttribute('data-user') === user) {
+                    // Re-enable the button if it was disabled by the disableUserButtons function
+                    if (button.disabled) {
+                        button.disabled = false; // Re-enable the button
+                        button.style.backgroundColor = ''; // Reset to default background
+                        button.style.cursor = 'pointer'; // Reset cursor to indicate clickable state
+                    }
+                }
             });
         }
 

@@ -16,6 +16,8 @@ let gameState = {
     user1ClickedTotal: 0,
     user2ClickedTotal: 0,
     round: 0,
+    user1Finished: false,
+    user2Finished: false,
     gameStarted: false,
     gameEnded: false
 };
@@ -62,6 +64,8 @@ function dealCards() {
     gameState.user1Clicked = 0;
     gameState.user2Clicked = 0;
     gameState.round += 1;
+    gameState.user1Finished = false;
+    gameState.user2Finished = false;
     gameState.gameEnded = false;
 }
 
@@ -233,14 +237,22 @@ wss.on('connection', (ws) => {
                 if (gameState.user1Clicked === 5 && gameState.user2Clicked === 5) {
                     dealCards();
                 }
-            } else if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
-                if (gameState.user1ClickedTotal === 13 && gameState.user2ClickedTotal === 13) {
-                    let points = computePoints(gameState.user1Board, gameState.user2Board);
-                    console.log(points);
-                    gameState.gameEnded = true;
+            } else {
+                if (gameState.user2Clicked === 2) {
+                    gameState.user2Finished = true;
                 }
-                else {
-                    dealCards();
+                if (gameState.user1Clicked === 2) {
+                    gameState.user1Finished = true;
+                }
+                if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
+                    if (gameState.user1ClickedTotal === 13 && gameState.user2ClickedTotal === 13) {
+                        let points = computePoints(gameState.user1Board, gameState.user2Board);
+                        console.log(points);
+                        gameState.gameEnded = true;
+                    }
+                    else {
+                        dealCards();
+                    }
                 }
             }
         }
