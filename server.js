@@ -19,6 +19,8 @@ let gameState = {
     user1Finished: false,
     user2Finished: false,
     gameStarted: false,
+    user1Score: 0,
+    user2Score: 0,
     gameEnded: false
 };
 
@@ -247,7 +249,9 @@ wss.on('connection', (ws) => {
                 if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
                     if (gameState.user1ClickedTotal === 13 && gameState.user2ClickedTotal === 13) {
                         let points = computePoints(gameState.user1Board, gameState.user2Board);
-                        console.log(points);
+                        const { user1Points, user2Points } = points;
+                        gameState.user1Score = user1Points;
+                        gameState.user2Score = user2Points;
                         gameState.gameEnded = true;
                     }
                     else {

@@ -47,10 +47,7 @@
                 
 
                 if (state.gameEnded) {
-                    const outputElement = document.getElementById('output');
-                    outputElement.innerHTML = JSON.stringify(state.user1Board.join(', ')+state.user2Board.join(', '));
-
-                    
+                    updateScores(state.user1Score,state.user2Score);
                 }
             };
             addTestButton(); // Add the test button when dealing cards
@@ -198,6 +195,11 @@
             }
         }
 
+        function updateScores(user1Score, user2Score) {
+            document.getElementById('user1Score').textContent = user1Score;
+            document.getElementById('user2Score').textContent = user2Score;
+        }
+
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             user = urlParams.get('user');
@@ -210,6 +212,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            border: 1px solid #ccc; /* Add a border for visibility */
+            padding: 10px; /* Add padding inside the board */
+            margin-right: 10px; /* Space between board and player info */
         }
 
         .row {
@@ -237,10 +242,20 @@
             display: flex; /* Ensure buttons are next to the name */
             align-items: center;
         }
+
+        .player-info {
+            display: flex; /* Align text vertically */
+            align-items: center; /* Center items vertically */
+            flex-direction: column; /* Stack the name and score */
+            margin-left: 10px; /* Space between the board and player info */
+            vertical-align: top; /* Align with the top of the board */
+            font-family: Arial, sans-serif; /* Font style */
+            font-size: 14px; /* Font size */
+        }
     </style>
 </head>
 <body>
-    <h1>Pinapple Poker Online</h1>
+    <h1>Pineapple Poker Online</h1>
 
     <h2></h2>
     <button id="dealCardsButton" onclick="dealFirst()">Start Game</button>
@@ -250,14 +265,21 @@
     <div id="cardContainer"></div>
 
     <h2>Rike's Board</h2>
-    <div id="user1Board" class="board"></div>
+    <div style="display: flex; align-items: center;">
+        <div id="user1Board" class="board"></div>
+        <div id="user1-info" class="player-info">
+            <strong>Score:</strong> <span id="user1Score"></span>
+        </div>
+    </div>
     <div id="user1-test-button" class="test-button-container"></div>
 
     <h2>Cuco's Board</h2>
-    <div id="user2Board" class="board"></div>
+    <div style="display: flex; align-items: center;">
+        <div id="user2Board" class="board"></div>
+        <div id="user2-info" class="player-info">
+            <strong>Score:</strong> <span id="user2Score"></span>
+        </div>
+    </div>
     <div id="user2-test-button" class="test-button-container"></div>
-
-    <h2>Results</h2>
-    <div id="output"></div>
 </body>
 </html>
