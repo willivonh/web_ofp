@@ -66,6 +66,7 @@
             cards.forEach((card) => {
                 const cardButton = document.createElement('button');
                 cardButton.textContent = card;
+                cardButton.className = 'card-button'; // 
 
                 // Set a data attribute to identify which user the button belongs to
                 cardButton.setAttribute('data-user', user);
@@ -252,6 +253,23 @@
             font-family: Arial, sans-serif; /* Font style */
             font-size: 14px; /* Font size */
         }
+
+        .cardContainer {
+            display: flex; /* Use flexbox to display buttons in a row */
+            flex-wrap: wrap; /* Allow buttons to wrap to the next line if needed */
+            margin-top: 5px; /* Add some space above the card buttons */
+        }
+
+        .card-button {
+            width: 60px; /* Match the width of slots */
+            height: 80px; /* Match the height of slots */
+            margin: 5px; /* Space between buttons */
+        }
+
+        .card-button.disabled {
+            background-color: #ccc; /* Change color for disabled state */
+            cursor: not-allowed; /* Change cursor for disabled state */
+        }
     </style>
 </head>
 <body>
@@ -262,7 +280,7 @@
     <button onclick="resetGame()">Reset Game</button>
 
     <h2>Your Cards</h2>
-    <div id="cardContainer"></div>
+    <div id="cardContainer" class="card-container"></div>
 
     <h2>Rike's Board</h2>
     <div style="display: flex; align-items: center;">
