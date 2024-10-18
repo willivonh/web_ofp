@@ -66,33 +66,22 @@ function dealCards() {
 }
 
 function evaluateHand(cards) {
-    // Function to compute hand rank (this will need to handle multiple poker hands)
-    // Here we'll implement a very basic hand evaluator to get you started
-
-    // Helper to get card rank value (Ace is high, can modify for low straight rules)
     const rankOrder = {
         '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
         'J': 11, 'Q': 12, 'K': 13, 'A': 14
     };
 
-    // Extract ranks and suits from the card array
     const ranks = cards.map(card => rankOrder[card.slice(0, -1)]).sort((a, b) => a - b);
     const suits = cards.map(card => card.slice(-1));
-
-    // Count occurrences of each rank
+    
     const rankCounts = {};
     ranks.forEach(rank => rankCounts[rank] = (rankCounts[rank] || 0) + 1);
 
-    // Check for pairs, three-of-a-kinds, four-of-a-kinds, etc.
-    const counts = Object.values(rankCounts).sort((a, b) => b - a); // Sort counts from high to low
+    const counts = Object.values(rankCounts).sort((a, b) => b - a);
 
-    // Check for straight (consecutive ranks)
+    const isFlush = suits.every(suit => suit === suits[0]);
     const isStraight = ranks.every((r, i) => i === 0 || r === ranks[i - 1] + 1);
 
-    // Check for flush (same suit)
-    const isFlush = suits.every(suit => suit === suits[0]);
-
-    // Determine hand strength
     if (isStraight && isFlush) return 'Straight Flush';
     if (counts[0] === 4) return 'Four of a Kind';
     if (counts[0] === 3 && counts[1] === 2) return 'Full House';
@@ -106,7 +95,7 @@ function evaluateHand(cards) {
 
 function compareHands(user1Hand, user2Hand) {
     const handRankings = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush'];
-    
+
     const user1Rank = handRankings.indexOf(evaluateHand(user1Hand));
     const user2Rank = handRankings.indexOf(evaluateHand(user2Hand));
 
@@ -115,27 +104,79 @@ function compareHands(user1Hand, user2Hand) {
     } else if (user1Rank < user2Rank) {
         return 'user2';
     } else {
-        return 'tie'; // If ranks are the same
+        return 'tie';
     }
 }
 
-function computeResults(user1Board, user2Board) {
-    // Top Row: First 3 cards
-    let topResult = compareHands(user1Board.slice(0, 3), user2Board.slice(0, 3));
+function calculateRoyalties(row, position) {
+    let royalties = 0;
 
-    // Middle Row: Next 5 cards
-    let middleResult = compareHands(user1Board.slice(3, 8), user2Board.slice(3, 8));
+    const hand = evaluateHand(row);
 
-    // Bottom Row: Last 5 cards
-    let bottomResult = compareHands(user1Board.slice(8, 13), user2Board.slice(8, 13));
+    if (position === 'top') {
+        // Check for pairs of 6s or better
+        if (hand === 'Pair') {
+            const rank = row[0].slice(0, -1); // Get the rank of the pair
+            const rankOrder = { '6': 1, '7': 2, '8': 3, '9': 4, '10': 5, 'J': 6, 'Q': 7, 'K': 8, 'A': 9 };
+            royalties += rankOrder[rank] || 0;
+        }
+    } else if (position === 'middle') {
+        // Straight or better
+        if (hand === 'Straight') royalties += 2;
+        if (hand === 'Flush') royalties += 4;
+        if (hand === 'Full House') royalties += 6;
+        if (hand === 'Four of a Kind') royalties += 10;
+        if (hand === 'Straight Flush') royalties += 15;
+        if (hand === 'Royal Flush') royalties += 50;
+    } else if (position === 'bottom') {
+        // Full House or better
+        if (hand === 'Full House') royalties += 6;
+        if (hand === 'Four of a Kind') royalties += 10;
+        if (hand === 'Straight Flush') royalties += 15;
+        if (hand === 'Royal Flush') royalties += 25;
+    }
 
-    return {
-        topRowWinner: topResult,
-        middleRowWinner: middleResult,
-        bottomRowWinner: bottomResult
-    };
+    return royalties;
 }
 
+function computePoints(user1Board, user2Board) {
+    let user1Points = 0;
+    let user2Points = 0;
+
+    // Compare Top Row
+    let topResult = compareHands(user1Board.slice(0, 3), user2Board.slice(0, 3));
+    if (topResult === 'user1') user1Points += 1;
+    if (topResult === 'user2') user2Points += 1;
+
+    // Compare Middle Row
+    let middleResult = compareHands(user1Board.slice(3, 8), user2Board.slice(3, 8));
+    if (middleResult === 'user1') user1Points += 1;
+    if (middleResult === 'user2') user2Points += 1;
+
+    // Compare Bottom Row
+    let bottomResult = compareHands(user1Board.slice(8, 13), user2Board.slice(8, 13));
+    if (bottomResult === 'user1') user1Points += 1;
+    if (bottomResult === 'user2') user2Points += 1;
+
+    // Check for a scoop
+    if (topResult === 'user1' && middleResult === 'user1' && bottomResult === 'user1') user1Points += 3; // Scoop bonus
+    if (topResult === 'user2' && middleResult === 'user2' && bottomResult === 'user2') user2Points += 3; // Scoop bonus
+
+    // Calculate royalties
+    user1Points += calculateRoyalties(user1Board.slice(0, 3), 'top');
+    user2Points += calculateRoyalties(user2Board.slice(0, 3), 'top');
+
+    user1Points += calculateRoyalties(user1Board.slice(3, 8), 'middle');
+    user2Points += calculateRoyalties(user2Board.slice(3, 8), 'middle');
+
+    user1Points += calculateRoyalties(user1Board.slice(8, 13), 'bottom');
+    user2Points += calculateRoyalties(user2Board.slice(8, 13), 'bottom');
+
+    return {
+        user1Points,
+        user2Points
+    };
+}
 
 // Serve static files
 app.use(express.static('public'));
@@ -194,8 +235,8 @@ wss.on('connection', (ws) => {
                 }
             } else if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
                 if (gameState.user1ClickedTotal === 13 && gameState.user2ClickedTotal === 13) {
-                    let results = computeResults(gameState.user1Board, gameState.user2Board);
-                    console.log(results);
+                    let points = computePoints(gameState.user1Board, gameState.user2Board);
+                    console.log(points);
                     gameState.gameEnded = true;
                 }
                 else {
