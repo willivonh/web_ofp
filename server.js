@@ -65,6 +65,78 @@ function dealCards() {
     gameState.gameEnded = false;
 }
 
+function evaluateHand(cards) {
+    // Function to compute hand rank (this will need to handle multiple poker hands)
+    // Here we'll implement a very basic hand evaluator to get you started
+
+    // Helper to get card rank value (Ace is high, can modify for low straight rules)
+    const rankOrder = {
+        '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10,
+        'J': 11, 'Q': 12, 'K': 13, 'A': 14
+    };
+
+    // Extract ranks and suits from the card array
+    const ranks = cards.map(card => rankOrder[card.slice(0, -1)]).sort((a, b) => a - b);
+    const suits = cards.map(card => card.slice(-1));
+
+    // Count occurrences of each rank
+    const rankCounts = {};
+    ranks.forEach(rank => rankCounts[rank] = (rankCounts[rank] || 0) + 1);
+
+    // Check for pairs, three-of-a-kinds, four-of-a-kinds, etc.
+    const counts = Object.values(rankCounts).sort((a, b) => b - a); // Sort counts from high to low
+
+    // Check for straight (consecutive ranks)
+    const isStraight = ranks.every((r, i) => i === 0 || r === ranks[i - 1] + 1);
+
+    // Check for flush (same suit)
+    const isFlush = suits.every(suit => suit === suits[0]);
+
+    // Determine hand strength
+    if (isStraight && isFlush) return 'Straight Flush';
+    if (counts[0] === 4) return 'Four of a Kind';
+    if (counts[0] === 3 && counts[1] === 2) return 'Full House';
+    if (isFlush) return 'Flush';
+    if (isStraight) return 'Straight';
+    if (counts[0] === 3) return 'Three of a Kind';
+    if (counts[0] === 2 && counts[1] === 2) return 'Two Pair';
+    if (counts[0] === 2) return 'Pair';
+    return 'High Card';
+}
+
+function compareHands(user1Hand, user2Hand) {
+    const handRankings = ['High Card', 'Pair', 'Two Pair', 'Three of a Kind', 'Straight', 'Flush', 'Full House', 'Four of a Kind', 'Straight Flush'];
+    
+    const user1Rank = handRankings.indexOf(evaluateHand(user1Hand));
+    const user2Rank = handRankings.indexOf(evaluateHand(user2Hand));
+
+    if (user1Rank > user2Rank) {
+        return 'user1';
+    } else if (user1Rank < user2Rank) {
+        return 'user2';
+    } else {
+        return 'tie'; // If ranks are the same
+    }
+}
+
+function computeResults(user1Board, user2Board) {
+    // Top Row: First 3 cards
+    let topResult = compareHands(user1Board.slice(0, 3), user2Board.slice(0, 3));
+
+    // Middle Row: Next 5 cards
+    let middleResult = compareHands(user1Board.slice(3, 8), user2Board.slice(3, 8));
+
+    // Bottom Row: Last 5 cards
+    let bottomResult = compareHands(user1Board.slice(8, 13), user2Board.slice(8, 13));
+
+    return {
+        topRowWinner: topResult,
+        middleRowWinner: middleResult,
+        bottomRowWinner: bottomResult
+    };
+}
+
+
 // Serve static files
 app.use(express.static('public'));
 
@@ -122,6 +194,8 @@ wss.on('connection', (ws) => {
                 }
             } else if (gameState.user1Clicked === 2 && gameState.user2Clicked === 2) {
                 if (gameState.user1ClickedTotal === 13 && gameState.user2ClickedTotal === 13) {
+                    let results = computeResults(gameState.user1Board, gameState.user2Board);
+                    console.log(results);
                     gameState.gameEnded = true;
                 }
                 else {
