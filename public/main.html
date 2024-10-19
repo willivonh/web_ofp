@@ -161,8 +161,11 @@
                             
                             // Remove 'clicked' class from all slots
                             allSlots.forEach((s) => s.classList.remove('clicked'));
-                            
+
                             slot.classList.add('clicked'); // Add clicked class to change background color
+
+                            const clickedUser1Slot = getClickedSlot('user1Board');
+                            alert(`User 1 clicked slot ${clickedUser1Slot.index + 1}: ${clickedUser1Slot.content}`);
                         } else {
                             slot.classList.remove('clicked'); // Toggle back to unclicked state if pressed again
                         }
@@ -172,6 +175,26 @@
                 row.appendChild(slot);
             });
             return row;
+        }
+
+        // Function to identify which slot is clicked on a specific board
+        function getClickedSlot(boardId) {
+            // Get all slots within the specified board
+            const allSlots = document.querySelectorAll(`#${boardId} .slot`);
+
+            // Loop through the slots to find the one with the 'clicked' class
+            for (let i = 0; i < allSlots.length; i++) {
+                if (allSlots[i].classList.contains('clicked')) {
+                    // Return the index of the clicked slot and its content
+                    return {
+                        index: i,
+                        content: allSlots[i].textContent
+                    };
+                }
+            }
+            
+            // Return null if no slot is clicked
+            return null;
         }
 
         function dealFirst() {
