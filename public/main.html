@@ -155,6 +155,13 @@
                 // Add onclick event to change color when clicked
                     slot.onclick = function() {
                         if (!slot.classList.contains('clicked')) {
+
+                            // Find all slots in the current board
+                            const allSlots = document.querySelectorAll(`#${boardId} .slot`);
+                            
+                            // Remove 'clicked' class from all slots
+                            allSlots.forEach((s) => s.classList.remove('clicked'));
+                            
                             slot.classList.add('clicked'); // Add clicked class to change background color
                         } else {
                             slot.classList.remove('clicked'); // Toggle back to unclicked state if pressed again
