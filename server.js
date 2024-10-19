@@ -23,6 +23,8 @@ let gameState = {
     user2Score: 0,
     user1SelectedCard: 0,
     user2SelectedCard: 0,
+    user1OverallScore: 0,
+    user2OverallScore: 0,
     gameEnded: false
 };
 
@@ -243,6 +245,8 @@ wss.on('connection', (ws) => {
                         const { user1Points, user2Points } = points;
                         gameState.user1Score = user1Points;
                         gameState.user2Score = user2Points;
+                        gameState.user1OverallScore += user1Points;
+                        gameState.user2OverallScore += user2Points;
                         gameState.gameEnded = true;
                     }
                     else {

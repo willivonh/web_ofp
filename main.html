@@ -54,7 +54,7 @@
                 
 
                 if (state.gameEnded) {
-                    updateScores(state.user1Score,state.user2Score);
+                    updateScores(state.user1Score,state.user2Score,state.user1OverallScore,state.user2OverallScore);
                 }
             };
             addTestButton(); // Add the test button when dealing cards
@@ -257,9 +257,11 @@
             }
         }
 
-        function updateScores(user1Score, user2Score) {
+        function updateScores(user1Score, user2Score, user1OverallScore, user2OverallScore) {
             document.getElementById('user1Score').textContent = user1Score;
             document.getElementById('user2Score').textContent = user2Score;
+            document.getElementById('user1OverallScore').textContent = user1Score;
+            document.getElementById('user2OverallScore').textContent = user2Score;
         }
 
         window.onload = function() {
@@ -345,7 +347,7 @@
     </style>
 </head>
 <body>
-    <h1>Pineapple Poker Online (v0.1.1)</h1>
+    <h1>Pineapple Poker Online (v0.1.2)</h1>
 
     <h2></h2>
     <button id="dealCardsButton" onclick="dealFirst()">Start Game</button>
@@ -371,5 +373,15 @@
         </div>
     </div>
     <!-- <div id="user2-test-button" class="test-button-container"></div> -->
+
+    <h2>Overall Score</h2>
+    <div style="display: flex; align-items: center;">
+        <div id="user2-info" class="player-info">
+            <strong>Rike:</strong> <span id="user1OverallScore">0</span>
+        </div>
+        <div id="user2-info" class="player-info">
+            <strong>|   Cuco:</strong> <span id="user2OverallScore">0</span>
+        </div>
+    </div>
 </body>
 </html>
