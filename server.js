@@ -201,6 +201,9 @@ wss.on('connection', (ws) => {
             dealCards();
         } else if (data.action === 'reset') {
             dealFirst();
+        } else if(data.action === 'slotClick') {
+            const { user, index} = data;
+            console.log(index);
         } else if(data.action === 'cardClick') {
             const { user, card, row } = data;
 

@@ -164,8 +164,20 @@
 
                             slot.classList.add('clicked'); // Add clicked class to change background color
 
-                            const clickedUser1Slot = getClickedSlot('user1Board');
-                            alert(`User 1 clicked slot ${clickedUser1Slot.index + 1}: ${clickedUser1Slot.content}`);
+                            if (user === 'user1'){
+                                clickedUserSlot = getClickedSlot('user1Board');
+                            } 
+                            if (user === 'user2'){
+                                clickedUserSlot = getClickedSlot('user2Board');
+                            }
+                            // alert(`User 1 clicked slot ${clickedUser1Slot.index + 1}: ${clickedUser1Slot.content}`);
+
+                            ws.send(JSON.stringify({
+                                action: 'slotClick',
+                                user: user,
+                                index: clickedUserSlot.index,
+                            }));
+
                         } else {
                             slot.classList.remove('clicked'); // Toggle back to unclicked state if pressed again
                         }
@@ -187,7 +199,7 @@
                 if (allSlots[i].classList.contains('clicked')) {
                     // Return the index of the clicked slot and its content
                     return {
-                        index: i,
+                        index: i+1,
                         content: allSlots[i].textContent
                     };
                 }
