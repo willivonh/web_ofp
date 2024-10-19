@@ -134,16 +134,16 @@
             const bottomRow = board.slice(8, 13);
 
             // Create row elements for each
-            const topRowElement = createRow(topRow);
-            const middleRowElement = createRow(middleRow);
-            const bottomRowElement = createRow(bottomRow);
+            const topRowElement = createRow(topRow,boardId);
+            const middleRowElement = createRow(middleRow,boardId);
+            const bottomRowElement = createRow(bottomRow,boardId);
 
             boardContainer.appendChild(topRowElement);
             boardContainer.appendChild(middleRowElement);
             boardContainer.appendChild(bottomRowElement);
         }
 
-        function createRow(cards) {
+        function createRow(cards, boardId) {
             const row = document.createElement('div');
             row.className = 'row';
             cards.forEach((card) => {
@@ -151,14 +151,16 @@
                 slot.className = 'slot';
                 slot.textContent = card ? card : 'Empty';
 
+                if ((user === 'user1' && boardId === 'user1Board') || (user === 'user2' && boardId === 'user2Board')){
                 // Add onclick event to change color when clicked
-                slot.onclick = function() {
-                    if (!slot.classList.contains('clicked')) {
-                        slot.classList.add('clicked'); // Add clicked class to change background color
-                    } else {
-                        slot.classList.remove('clicked'); // Toggle back to unclicked state if pressed again
-                    }
-                };
+                    slot.onclick = function() {
+                        if (!slot.classList.contains('clicked')) {
+                            slot.classList.add('clicked'); // Add clicked class to change background color
+                        } else {
+                            slot.classList.remove('clicked'); // Toggle back to unclicked state if pressed again
+                        }
+                    };
+                }
 
                 row.appendChild(slot);
             });
