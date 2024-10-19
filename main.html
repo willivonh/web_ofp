@@ -10,8 +10,13 @@
 
         function setupWebSocket() {
             // ws = new WebSocket('ws://localhost:3000');
-            ws = new WebSocket('ws://cautious-xylophone-wrpwpjj47vqfg5q.github.dev:3000');
+            // ws = new WebSocket('ws://cautious-xylophone-wrpwpjj47vqfg5q.github.dev:3000');
             // ws = new WebSocket('ws://cautious-xylophone-willivonh.github.dev:3000');
+
+            const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${wsProtocol}//${window.location.host}`;
+            ws = new WebSocket(wsUrl);
+
 
             ws.onmessage = function(event) {
                 const state = JSON.parse(event.data);
