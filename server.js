@@ -189,7 +189,8 @@ function computePoints(user1Board, user2Board) {
 }
 
 // Serve static files
-app.use(express.static('public'));
+// app.use(express.static('public'));
+app.use(express.static('.'));
 
 // Handle WebSocket connections
 wss.on('connection', (ws) => {
