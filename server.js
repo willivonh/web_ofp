@@ -21,6 +21,8 @@ let gameState = {
     gameStarted: false,
     user1Score: 0,
     user2Score: 0,
+    user1SelectedCard: 0,
+    user2SelectedCard: 0,
     gameEnded: false
 };
 
@@ -51,6 +53,8 @@ function dealFirst() {
     gameState.user2Clicked = 0;
     gameState.user1Board = Array(13).fill(null);
     gameState.user2Board = Array(13).fill(null);
+    gameState.user1SelectedCard = 0;
+    gameState.user2SelectedCard = 0;
     gameState.gameEnded = false;
     gameState.gameStarted = true;
 }
@@ -203,33 +207,16 @@ wss.on('connection', (ws) => {
             dealFirst();
         } else if(data.action === 'slotClick') {
             const { user, index} = data;
-            console.log(index);
-        } else if(data.action === 'cardClick') {
-            const { user, card, row } = data;
 
             // Get the appropriate board and the user's clicked count
             const board = gameState[`${user}Board`];
             const clickedCount = gameState[`${user}Clicked`];
 
-            // Determine which row to place the card based on the button state
-            let rowIndex;
-            if (row === 1) {
-                rowIndex = 0;
-            } else if (row === 2) {
-                rowIndex = 3;
-            } else if (row === 3) {
-                rowIndex = 8;
-            }
-
             // Find the first empty slot in the chosen row
             let placed = false;
-            const maxIndex = row === 1 ? 2 : row === 2 ? 7 : 12;
-            for (let i = rowIndex; i <= maxIndex; i++) {
-                if (!board[i]) {
-                    board[i] = card;
-                    placed = true;
-                    break;
-                }
+            if (gameState[`${user}SelectedCard`] != 0){
+                board[index] = gameState[`${user}SelectedCard`];
+                placed = true;
             }
 
             if (placed) {
@@ -262,6 +249,10 @@ wss.on('connection', (ws) => {
                     }
                 }
             }
+        } else if(data.action === 'cardClick') {
+            const { user, card, row } = data;
+
+            gameState[`${user}SelectedCard`]  = card;
         }
 
         // Broadcast the updated game state to all connected clients
