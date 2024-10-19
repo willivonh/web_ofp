@@ -147,9 +147,19 @@
             const row = document.createElement('div');
             row.className = 'row';
             cards.forEach((card) => {
-                const slot = document.createElement('div');
+                const slot = document.createElement('button'); // Changed from div to button
                 slot.className = 'slot';
                 slot.textContent = card ? card : 'Empty';
+
+                // Add onclick event to change color when clicked
+                slot.onclick = function() {
+                    if (!slot.classList.contains('clicked')) {
+                        slot.classList.add('clicked'); // Add clicked class to change background color
+                    } else {
+                        slot.classList.remove('clicked'); // Toggle back to unclicked state if pressed again
+                    }
+                };
+
                 row.appendChild(slot);
             });
             return row;
@@ -237,6 +247,12 @@
             align-items: center;
             justify-content: center;
             margin: 5px;
+            background-color: white; /* Add a background color for button */
+            cursor: pointer; /* Ensure cursor changes to indicate it's clickable */
+        }
+
+        .slot.clicked {
+            background-color: lightblue; /* Change this to any color you want */
         }
 
         .slot.empty {
