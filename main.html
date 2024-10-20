@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Page</title>
     <script>
         let ws;
@@ -272,6 +273,38 @@
         };
     </script>
     <style>
+        @media only screen and (max-width: 600px) {
+            body {
+                transform: none; /* Remove scaling on small screens */
+                overflow: auto; /* Allow scrolling */
+                padding: 0;
+            }
+
+            .board {
+                width: 100%; /* Ensure the board takes full width */
+                padding: 5px; /* Adjust padding for smaller screens */
+                margin-right: 0; /* Remove extra space */
+            }
+
+            .slot {
+                width: 50px; /* Smaller card slots for better fit */
+                height: 70px;
+            }
+
+            .player-info {
+                font-size: 12px; /* Reduce text size on mobile */
+                margin-left: 5px;
+            }
+
+            .card-button {
+                width: 50px; /* Smaller card buttons */
+                height: 70px;
+            }
+            .slot, .card-button {
+                min-width: 44px; /* Apple's recommended minimum size for touch targets */
+                min-height: 44px;
+            }
+        }
         body {
             transform: scale(0.9); /* Scale down to 90% */
             transform-origin: top left; /* Ensure scaling starts from the top-left corner */
@@ -347,7 +380,7 @@
     </style>
 </head>
 <body>
-    <h1>Pineapple Poker Online (v0.1.2)</h1>
+    <h1>Pineapple Poker Online (v0.1.3)</h1>
 
     <h2></h2>
     <button id="dealCardsButton" onclick="dealFirst()">Start Game</button>
